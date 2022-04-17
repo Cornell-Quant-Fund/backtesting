@@ -8,4 +8,4 @@ Work in progress back-testing framework.
 
 # Current Scope:
 As is right now, this engine has support for any technical analysis based strategy, as well as strategies with indicators derived from some auxillary data source.
-Looking to include technical visualizations and trend lines, as well as a breakdown of asset weightings over time. 
+Looking to include strategy visualizations and trend lines, as well as a breakdown of asset weightings over time. 
