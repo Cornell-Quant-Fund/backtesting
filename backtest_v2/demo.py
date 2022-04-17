@@ -7,10 +7,7 @@ strat_function(preds, prices) - user specified mapping from past n days of price
 Returns: An L1 normalized array of asset weightings.
 '''
 
-
-
 # Pass in multiple preds
-
 # IMPLEMENTATION OF MARKOWITZ MODEL
 class Markowitz:
     def __init__(self):
@@ -56,6 +53,8 @@ class Markowitz:
         return np.cov(self.log_returns.T)
 
 model = Markowitz()
+
+
 def strat_function(preds, prices): return model.eval(prices[-1], preds[-1], preds[-1], preds[-1])
 
 '''
