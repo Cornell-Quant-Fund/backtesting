@@ -1,5 +1,5 @@
 # backtesting
-Work in progress back-testing framework. 
+A prototype back-testing framework. 
 
 # How to Use: 
 1. Refer to demo.py for an example. strat_function is a user-specified mapping from the past n-days of price and user data to portfolio weightings. 
