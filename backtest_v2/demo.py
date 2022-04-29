@@ -2,11 +2,6 @@ from backtest import backtest
 import numpy as np
 from scipy.optimize import minimize
 
-'''
-strat_function(preds, prices) - user specified mapping from past n days of price and analyst data to weights.
-Returns: An L1 normalized array of asset weightings.
-'''
-
 # Pass in multiple preds
 # IMPLEMENTATION OF MARKOWITZ MODEL
 class Markowitz:
@@ -55,6 +50,20 @@ class Markowitz:
 model = Markowitz()
 
 
+
+
+
+'''
+strat_function(preds, prices) - user specified mapping from past n days of price and analyst data to weights.
+Returns: An array of asset weightings. The maximum weighting is 1, and the minimum is -1. The weights must sum to between -1 and 1. 
+
+Refer to test datasets for the shape of input data. Both preds and prices will be 2 dimensional arrays, with number of columns equal to number of assets + 1.
+Number of days equal to number of rows. The first column will be date data.
+
+Your strategy function needs to work with this data to geenrate portfolio weights.
+
+
+'''
 def strat_function(preds, prices): return model.eval(prices[-1], preds[-1], preds[-1], preds[-1])
 
 '''
