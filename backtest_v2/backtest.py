@@ -36,7 +36,7 @@ class Account():
         if len(self.yesterday_prices) == 0:
             self.absolute_values.append(self.start_val)
         else:
-            self.absolute_values.append(self.absolute_values[-1] * (np.dot(weights, 1 + ((prices - self.yesterday_prices) / self.yesterday_prices))))
+            self.absolute_values.append(self.absolute_values[-1] * (1 + np.dot(weights,((prices - self.yesterday_prices) / self.yesterday_prices))))
         self.yesterday_prices = prices
         self.weights.append(weights)
 

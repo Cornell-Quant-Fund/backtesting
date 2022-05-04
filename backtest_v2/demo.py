@@ -16,7 +16,7 @@ Your strategy function needs to work with this data to geenrate portfolio weight
 '''
 def strat_function(preds, prices, last_weights): 
 
-    print(last_weights)
+    #print(last_weights)
         # Pass in multiple preds
     # IMPLEMENTATION OF MARKOWITZ MODEL
     class Markowitz:
