@@ -15,6 +15,8 @@ Your strategy function needs to work with this data to geenrate portfolio weight
 
 '''
 def strat_function(preds, prices, last_weights): 
+
+    print(last_weights)
         # Pass in multiple preds
     # IMPLEMENTATION OF MARKOWITZ MODEL
     class Markowitz:
@@ -42,7 +44,6 @@ def strat_function(preds, prices, last_weights):
             cons = ({'type':'eq', 'fun': lambda w : np.sum(w)-1}, {'type':'ineq', 'fun': lambda w : 1-np.max(np.abs(w))})
             res = minimize(f, np.array([1, 1, 1, 1, 1, 1, 1, 1, 1]), constraints=cons)
             weights = res.x.T
-            print(weights)
             if any([abs(w) > 1 for w in weights]): return np.ones(9)/9
             return weights / np.sum(weights)
 
