@@ -18,6 +18,7 @@ class Account():
         self.absolute_values = []
         self.start_val = starting_val
         self.yesterday_prices = []
+        self.weights = []
 
     '''
     update(self, weights, caps) - Updates the liquid (total) value of the portfolio given current data 
@@ -37,6 +38,7 @@ class Account():
         else:
             self.absolute_values.append(self.absolute_values[-1] * (np.dot(weights, 1 + ((prices - self.yesterday_prices) / self.yesterday_prices))))
         self.yesterday_prices = prices
+        self.weights.append(weights)
 
     '''
     calc_deltas(self) - Calculates the percent change of account value day-to-day 
@@ -119,8 +121,8 @@ class Strategy():
     Returns:
     1D Array
     '''
-    def allocations(self, analyst_info, price_info):
-        return self.strategy_function(price_info, analyst_info)
+    def allocations(self, analyst_info, price_info, prev_weights):
+        return self.strategy_function(price_info, analyst_info, prev_weights)
 
 def read_data(price_location, view_location):
     prices = pd.read_csv(price_location).to_numpy()[:, 1:]
@@ -132,7 +134,11 @@ def backtest(strat_function, starting_value, prices_location, views_location):
     acc = Account(starting_value)
     strat = Strategy(strat_function)    
     for ind, (price, view) in enumerate(zip(prices, views)): 
-        acc.update(strat.allocations(prices[0: ind  + 1], views[0: ind + 1]), price)
+        if ind == 0:
+            prev_weights = list(np.zeros(len(prices[0]))) 
+        else:
+            prev_weights = acc.weights[-1]
+        acc.update(strat.allocations(prices[0: ind  + 1], views[0: ind + 1], prev_weights), price)
 
     sharpe = acc.daily_sharpe()
     max_drawdown = acc.max_drawdown()
