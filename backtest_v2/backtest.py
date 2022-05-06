@@ -136,6 +136,21 @@ def read_data(price_location, view_location):
     views = pd.read_csv(view_location).to_numpy()[:, 1:]
     return prices, views
 
+
+
+
+def plot_hist(rets):
+
+
+
+
+    pass 
+
+
+
+
+
+
 def backtest(strat_function, starting_value, prices_location, views_location):
     prices, views = read_data(prices_location, views_location)
     acc = Account(starting_value)
@@ -160,5 +175,14 @@ def backtest(strat_function, starting_value, prices_location, views_location):
     plt.plot(acc.absolute_values)
     plt.xlabel = "Time"
     plt.ylabel = "Portfolio Value"
+    
+    plt.plot(acc.absolute_values[1:]/acc.absolute_values[:-1])
+    plt.xlabel = "Time"
+    plt.ylabel = "Returns"
+    
+    plt.hist(acc.absolute_values[1:]/acc.absolute_values[:-1], bins=500)
     plt.show()
+
+
+
         
