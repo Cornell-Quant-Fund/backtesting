@@ -39,7 +39,11 @@ class Account():
             self.absolute_values.append(self.start_val)
         else:
             problem_child = np.where(self.yesterday_prices == 0)[0]
-            self.absolute_values.append(self.absolute_values[-1] * (1 + np.dot(weights,((np.delete(prices, problem_child) - np.delete(prices, self.yesterday_prices)) / np.delete(self.yesterday_prices, problem_child)))))
+            if problem_child != []:
+                self.absolute_values.append(self.absolute_values[-1] * (1 + np.dot(weights,((np.delete(prices, problem_child) - np.delete(self.yesterday_prices, problem_child)) / np.delete(self.yesterday_prices, problem_child)))))
+            else:
+                self.absolute_values.append(self.absolute_values[-1] * (1 + np.dot(weights,((prices -  self.yesterday_prices) / self.yesterday_prices))))
+
         self.yesterday_prices = prices
         self.weights.append(weights)
 
