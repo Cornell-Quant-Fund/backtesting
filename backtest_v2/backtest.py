@@ -185,9 +185,9 @@ def backtest(strat_function, starting_value, prices_location, views_location):
 
     plt.figure()
 
-    plt.hist(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1]), bins=5000)
+    plt.hist(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1]), bins=50)
+    print(f'Max Tick Return: {np.amax(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
+    print(f'Min Tick Return: {np.amin(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
+    print(f'Average Tick Return: {np.average(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
     plt.show()
-
-
-
         
