@@ -175,12 +175,17 @@ def backtest(strat_function, starting_value, prices_location, views_location):
     plt.plot(acc.absolute_values)
     plt.xlabel = "Time"
     plt.ylabel = "Portfolio Value"
+
+    plt.figure()
+
     
-    plt.plot(acc.absolute_values[1:]/acc.absolute_values[:-1])
+    plt.plot(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1]))
     plt.xlabel = "Time"
     plt.ylabel = "Returns"
-    
-    plt.hist(acc.absolute_values[1:]/acc.absolute_values[:-1], bins=500)
+
+    plt.figure()
+
+    plt.hist(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1]), bins=5000)
     plt.show()
 
 
