@@ -4,6 +4,7 @@ import pandas as pd
 import scipy
 import math
 import matplotlib.pyplot as plt
+import csv
 
 class Account():
     '''
@@ -14,11 +15,21 @@ class Account():
     Returns:
     The Account object
     '''
-    def __init__(self, starting_val): 
+    def __init__(self, starting_val, log, names, log_loc): 
         self.absolute_values = []
         self.start_val = starting_val
         self.yesterday_prices = []
         self.weights = []
+        self.log = log 
+        self.labels = names[1:]
+        self.trades = []
+        print(f'Labels: {self.labels}')
+        if log:
+            row = ["Date", "Value", "Return", "Weights"]
+            with open(log_loc, mode='a', encoding='utf-8', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(row)
+
 
     '''
     update(self, weights, caps) - Updates the liquid (total) value of the portfolio given current data 
@@ -40,12 +51,21 @@ class Account():
         else:
             problem_child = np.where(self.yesterday_prices == 0)[0]
             if list(problem_child) != []:
-                self.absolute_values.append(self.absolute_values[-1] * (1 + np.dot(np.delete(weights, problem_child) ,((np.delete(prices, problem_child) - np.delete(self.yesterday_prices, problem_child)) / np.delete(self.yesterday_prices, problem_child)))))
-            else:
-                self.absolute_values.append(self.absolute_values[-1] * (1 + np.dot(weights,((prices -  self.yesterday_prices) / self.yesterday_prices))))
+                ret = np.dot(np.delete(weights, problem_child) ,((np.delete(prices, problem_child) - np.delete(self.yesterday_prices, problem_child)) / np.delete(self.yesterday_prices, problem_child)))
+                val = self.absolute_values[-1] * (1 + ret)
+                self.absolute_values.append(val)
+                if self.log: 
+                    self.trades.append({"Value": val, "Return" : ret, "Weights" : list(map(lambda x,y,z: (x,y,z), np.delete(self.labels, problem_child), np.delete(weights, problem_child), (np.delete(prices, problem_child) - np.delete(self.yesterday_prices, problem_child)) / np.delete(self.yesterday_prices, problem_child)))})
 
-        self.yesterday_prices = prices
+            else:
+                ret = np.dot(weights,((prices -  self.yesterday_prices) / self.yesterday_prices))
+                val = self.absolute_values[-1] * (1 + ret)
+                self.absolute_values.append(val)
+                if self.log: 
+                    self.trades.append({"Value": val, "Return" : ret, "Weights" : list(map(lambda x,y,z: (x,y,z), self.labels, weights,(prices -  self.yesterday_prices) / self.yesterday_prices))})
+
         self.weights.append(weights)
+        self.yesterday_prices = prices
 
     '''
     calc_deltas(self) - Calculates the percent change of account value day-to-day 
@@ -134,26 +154,14 @@ class Strategy():
 def read_data(price_location, view_location):
     prices = pd.read_csv(price_location).to_numpy()[:, 1:]
     views = pd.read_csv(view_location).to_numpy()[:, 1:]
-    return prices, views
+    names = list(pd.read_csv(price_location).columns.values) 
+    return prices, views, names 
 
 
 
-
-def plot_hist(rets):
-
-
-
-
-    pass 
-
-
-
-
-
-
-def backtest(strat_function, starting_value, prices_location, views_location):
-    prices, views = read_data(prices_location, views_location)
-    acc = Account(starting_value)
+def backtest(strat_function, starting_value, prices_location, views_location, log, log_name):
+    prices, views, names = read_data(prices_location, views_location)
+    acc = Account(starting_value, log, names, log_name)
     strat = Strategy(strat_function)    
     for ind, (price, view) in enumerate(zip(prices, views)): 
         if ind == 0:
@@ -189,5 +197,11 @@ def backtest(strat_function, starting_value, prices_location, views_location):
     print(f'Max Tick Return: {np.amax(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
     print(f'Min Tick Return: {np.amin(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
     print(f'Average Tick Return: {np.average(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
+
+    if acc.log: 
+        with open(log_name, mode='a', encoding='utf-8', newline='') as f:
+            writer = csv.writer(f)
+            [writer.writerow([idx, trade["Value"], trade["Return"], trade["Weights"]]) for idx, trade in enumerate(acc.trades)]
+
     plt.show()
         
