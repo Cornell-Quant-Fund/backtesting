@@ -161,47 +161,56 @@ def read_data(price_location, view_location):
 
 def backtest(strat_function, starting_value, prices_location, views_location, log, log_name):
     prices, views, names = read_data(prices_location, views_location)
+    #print(prices)
+    #print(views)
+    #print(names)
     acc = Account(starting_value, log, names, log_name)
     strat = Strategy(strat_function)    
-    for ind, (price, view) in enumerate(zip(prices, views)): 
+    for ind, (price, view) in enumerate(zip(prices, views)):
         if ind == 0:
             prev_weights = list(np.zeros(len(prices[0]))) 
         else:
             prev_weights = acc.weights[-1]
-        acc.update(strat.allocations(prices[0: ind  + 1], views[0: ind + 1], prev_weights), price)
 
+        acc.update(strat.allocations(prices[0: ind + 1], views[0: ind + 1], prev_weights), price)
     sharpe = acc.daily_sharpe()
     max_drawdown = acc.max_drawdown()
     calmar = acc.calmar()
     total_return, percent_return = acc.returns()
-        
-
-    print(f'Sharpe: {sharpe}')
-    print(f'Max Drawdon: {max_drawdown}')
-    print(f'Total Return: {total_return}')
-    print(f'Percent Return: {percent_return}')
-    plt.plot(acc.absolute_values)
-    plt.xlabel = "Time"
-    plt.ylabel = "Portfolio Value"
-
-    plt.figure()
-
-    
-    plt.plot(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1]))
-    plt.xlabel = "Time"
-    plt.ylabel = "Returns"
-
-    plt.figure()
-
-    plt.hist(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1]), bins=50)
-    print(f'Max Tick Return: {np.amax(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
-    print(f'Min Tick Return: {np.amin(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
-    print(f'Average Tick Return: {np.average(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
-
     if acc.log: 
         with open(log_name, mode='a', encoding='utf-8', newline='') as f:
             writer = csv.writer(f)
             [writer.writerow([idx, trade["Value"], trade["Return"], trade["Weights"]]) for idx, trade in enumerate(acc.trades)]
 
+    print(f'Sharpe: {sharpe}')
+    print(f'Max Drawdown: {max_drawdown}')
+    print(f'Total Return: {total_return}')
+    print(f'Percent Return: {percent_return}')
+    print(f'Max Tick Return: {np.amax(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
+    print(f'Min Tick Return: {np.amin(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
+    print(f'Average Tick Return: {np.average(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
+
+    fig, axs = plt.subplots(3, 1, constrained_layout=True)
+    axs[0].plot(acc.absolute_values)
+    axs[0].set_title('Portfolio')
+    axs[0].set_xlabel('Time')
+    axs[0].set_ylabel('Portfolio Value')
+    fig.suptitle('Visual Representation of Strategy Performance', fontsize=16)
+
+    axs[1].plot(np.array(acc.absolute_values[1:]) / np.array(acc.absolute_values[:-1]))
+    axs[1].set_xlabel('Time')
+    axs[1].set_title('Returns (side view)')
+    axs[1].set_ylabel('Returns')
+
+    axs[2].hist(np.array(acc.absolute_values[1:]) / np.array(acc.absolute_values[:-1]), bins=50)
+    axs[2].set_xlabel('% Return')
+    axs[2].set_title('Returns (front view)')
+    axs[2].set_ylabel('Frequency')
     plt.show()
+
+    # convert array into dataframe
+    DF = pd.DataFrame(acc.absolute_values)
+
+    # save the dataframe as a csv file
+    DF.to_csv("time_series_data.csv")
         
