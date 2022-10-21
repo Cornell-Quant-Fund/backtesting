@@ -207,4 +207,10 @@ def backtest(strat_function, starting_value, prices_location, views_location, lo
     axs[2].set_title('Returns (front view)')
     axs[2].set_ylabel('Frequency')
     plt.show()
+
+    # convert array into dataframe
+    DF = pd.DataFrame(acc.absolute_values)
+
+    # save the dataframe as a csv file
+    DF.to_csv("time_series_data.csv")
         
