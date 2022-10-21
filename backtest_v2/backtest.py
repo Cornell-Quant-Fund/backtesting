@@ -183,7 +183,7 @@ def backtest(strat_function, starting_value, prices_location, views_location, lo
             [writer.writerow([idx, trade["Value"], trade["Return"], trade["Weights"]]) for idx, trade in enumerate(acc.trades)]
 
     print(f'Sharpe: {sharpe}')
-    print(f'Max Drawdon: {max_drawdown}')
+    print(f'Max Drawdown: {max_drawdown}')
     print(f'Total Return: {total_return}')
     print(f'Percent Return: {percent_return}')
     print(f'Max Tick Return: {np.amax(np.array(acc.absolute_values[1:])/np.array(acc.absolute_values[:-1])) - 1}')
